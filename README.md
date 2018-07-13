@@ -1,4 +1,4 @@
-MyBatis SQL Mapper Framework for Java
+MySQL源码分析
 =====================================
 
 [![Build Status](https://travis-ci.org/mybatis/mybatis-3.svg?branch=master)](https://travis-ci.org/mybatis/mybatis-3)
