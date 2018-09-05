@@ -14,10 +14,16 @@ import java.io.InputStream;
 
 public class Main {
 
+    /**
+     * 这是个测试类，执行一个查询过程
+     * @param args
+     */
     public static void main(String[] args){
         String resource = "easyzhang/mybatis-config.xml";
         try(InputStream inputStream = Resources.getResourceAsStream(resource)){
+            //加载配置文件
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            //DefaultSqlSession <-这个才是实现类
             SqlSession session = sqlSessionFactory.openSession();
             City city = session.selectOne("selectByPrimaryKey", 1);
             System.out.println(city.getCityName());

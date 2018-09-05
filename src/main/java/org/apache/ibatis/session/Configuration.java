@@ -714,6 +714,12 @@ public class Configuration {
     return this.getMappedStatement(id, true);
   }
 
+  /**
+   * validateIncompleteStatements 验证不完整的语句
+   * @param id
+   * @param validateIncompleteStatements
+   * @return
+   */
   public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
     if (validateIncompleteStatements) {
       buildAllStatements();
