@@ -1,7 +1,6 @@
 package easyzhang;
 
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -22,7 +21,6 @@ public class Main {
             SqlSession session = sqlSessionFactory.openSession();
             City city = session.selectOne("selectByPrimaryKey", 1);
             System.out.println(city.getCityName());
-
             session.close();
         }catch (Exception e) {
              e.printStackTrace();
