@@ -32,13 +32,23 @@ import javax.sql.DataSource;
 import org.apache.ibatis.io.Resources;
 
 /**
+ * 不使用连接池的数据源
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
 public class UnpooledDataSource implements DataSource {
   
   private ClassLoader driverClassLoader;
+
+  /**
+   * 驱动连接属性，可以为空
+   */
   private Properties driverProperties;
+
+  /**
+   * 所有已注册的驱动，仅仅用于识别驱动在DriverManager中是否已经被加载进来了
+   * 例如： key:com.mysql.cj.jdbc.Driver   value:{@linkplain Driver}
+   */
   private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
   private String driver;
@@ -47,6 +57,9 @@ public class UnpooledDataSource implements DataSource {
   private String password;
 
   private Boolean autoCommit;
+  /**
+   * 事物隔离级别
+   */
   private Integer defaultTransactionIsolationLevel;
 
   static {
@@ -57,6 +70,9 @@ public class UnpooledDataSource implements DataSource {
     }
   }
 
+  /**
+   * 正常是走的这个方法创建对象
+   */
   public UnpooledDataSource() {
   }
 
@@ -183,6 +199,7 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private Connection doGetConnection(String username, String password) throws SQLException {
+    // 这里通过url加Properties来获取连接，是因为可以在配置文件中配置数据库连接的信息，比如编码之类的
     Properties props = new Properties();
     if (driverProperties != null) {
       props.putAll(driverProperties);
@@ -269,7 +286,7 @@ public class UnpooledDataSource implements DataSource {
       return this.driver.jdbcCompliant();
     }
 
-    // @Override only valid jdk7+
+    @Override
     public Logger getParentLogger() {
       return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     }

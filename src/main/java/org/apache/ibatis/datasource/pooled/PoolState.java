@@ -25,15 +25,38 @@ public class PoolState {
 
   protected PooledDataSource dataSource;
 
+  /**
+   * 空闲状态PooledConnection对象被放在这个集合里,调用getConnection方法时会优先从这里拿
+   */
   protected final List<PooledConnection> idleConnections = new ArrayList<>();
+
+  /**
+   * 活动状态PooledConnection对象被放在这里，调用getConnection方法时如果上面的集合里面取不到对象，这个集合还没满，
+   * 就创建一个对象，并返回....详情参看pooledDataSource.popConnection方法
+   */
   protected final List<PooledConnection> activeConnections = new ArrayList<>();
+  /**
+   * 请求数量
+   */
   protected long requestCount = 0;
+  /**
+   * 积累的请求时间
+   */
   protected long accumulatedRequestTime = 0;
   protected long accumulatedCheckoutTime = 0;
   protected long claimedOverdueConnectionCount = 0;
   protected long accumulatedCheckoutTimeOfOverdueConnections = 0;
+  /**
+   * 积累的等待时间
+   */
   protected long accumulatedWaitTime = 0;
+  /**
+   * 不得不等待的计数
+   */
   protected long hadToWaitCount = 0;
+  /**
+   * 坏连接数
+   */
   protected long badConnectionCount = 0;
 
   public PoolState(PooledDataSource dataSource) {
