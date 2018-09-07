@@ -245,7 +245,7 @@ public class UnpooledDataSource implements DataSource {
         // DriverManager requires the driver to be loaded via the system ClassLoader.
         // http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
         /**
-         * 文章放在unpooled包下面了
+         * 文章放在 unpooled 包下面了
          */
         Driver driverInstance = (Driver)driverType.newInstance();
         DriverManager.registerDriver(new DriverProxy(driverInstance));
