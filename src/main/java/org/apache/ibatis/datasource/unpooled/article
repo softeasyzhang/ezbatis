@@ -1,0 +1,88 @@
+the resource article
+
+Pick your JDBC driver at runtime
+
+If you're going to do any sort of database activity in Java, you'll probably be using JDBC. Like ODBC before it, JDBC is
+a great way to insure that your program is free of any ties to the underlying database. Traditionally, the mechanism is
+that you put the JDBC driver somewhere in the classpath and then use class.forName() to find and load the driver.
+
+One problem with this is that it presumes that your driver is in the classpath. This means either packaging the driver
+in your jar, or having to stick the driver somewhere (probably unpacking it too), or modifying your classpath.
+
+"But why not use something like URLClassLoader and the overload of class.forName() that lets you specify the ClassLoader?"
+ Because the DriverManager will refuse to use a driver not loaded by the system ClassLoader. Ouch!
+
+The workaround for this is to create a shim class that implements java.sql.Driver. This shim class will do nothing but
+call the methods of an instance of a JDBC driver that we loaded dynamically. Something like this:
+
+如果您打算在Java中进行任何类型的数据库活动，那么您可能会使用JDBC。与之前的ODBC一样，JDBC是确保程序不与底层数据库有任何联
+系的好方法。传统上，机制是把JDBC驱动程序放在类路径中的某个地方，然后使用class.forname（）来查找和加载驱动程序。
+
+这样做的一个问题是，它假定您的驱动程序在类路径中。这意味着要么将驱动程序打包在jar中，要么必须将驱动程序放在某个地方
+（可能也会将其拆包），或者修改类路径。
+
+“但是为什么不使用像URLClassLoader和重载的class.forName（）来指定类加载器呢？”因为驱动程序管理器会拒绝使用系统类加载器
+没有加载的驱动程序。哎哟!
+
+解决这个问题的方法是创建一个shim(薄垫片)类来实现java.sql.Driver。shim类除了调用我们动态加载的JDBC驱动程序实例之外，什么也不做。是这样的:
+
+import java.sql.*;
+
+class DriverShim implements Driver {
+	private Driver driver;
+	DriverShim(Driver d) {
+		this.driver = d;
+	}
+	public boolean acceptsURL(String u) throws SQLException {
+		return this.driver.acceptsURL(u);
+	}
+	public Connection connect(String u, Properties p) throws SQLException {
+		return this.driver.connect(u, p);
+	}
+	public int getMajorVersion() {
+		return this.driver.getMajorVersion();
+	}
+	public int getMinorVersion() {
+		return this.driver.getMinorVersion();
+	}
+	public DriverPropertyInfo[] getPropertyInfo(String u, Properties p) throws SQLException {
+		return this.driver.getPropertyInfo(u, p);
+	}
+	public boolean jdbcCompliant() {
+		return this.driver.jdbcCompliant();
+	}
+}
+
+class test {
+	public will_not_work() {
+		URL u = new URL("jar:file:/path/to/pgjdbc2.jar!/");
+		String classname = "org.postgresql.Driver"
+		URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+
+		Class.forName(classname, true, ucl);
+
+		DriverManager.getConnection("jdbc:postgresql://host/db", "user", "pw");
+		// That will throw SQLException: No suitable driver
+	}
+	public will_work() {
+		URL u = new URL("jar:file:/path/to/pgjdbc2.jar!/");
+		String classname = "org.postgresql.Driver";
+		URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+
+		Driver d = (Driver)Class.forName(classname, true, ucl).newInstance();
+		DriverManager.registerDriver(new DriverShim(d));
+
+		DriverManager.getConnection("jdbc:postgresql://host/db", "user", "pw");
+		// Success!
+	}
+
+
+will_work() works because DriverShim was loaded by the system class loader,
+and the DriverManager doesn't care that it invokes a class that wasn't. We must perform the registration on
+the instance ourselves, because although Class.forName() will cause a registration to take place, that particular
+registration will fail for the same reason that will_not_work() fails.
+
+willwork（）之所以能工作，是因为DriverShim是由系统类装入器装入的，
+而DriverManager并不关心它调用了一个没有的类。我们必须进行注册
+我们自己，因为尽管类。forname（）会导致注册发生，那个特殊的
+注册失败的原因与willnotwork（）失败的原因相同。

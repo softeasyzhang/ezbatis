@@ -62,6 +62,9 @@ public class UnpooledDataSource implements DataSource {
    */
   private Integer defaultTransactionIsolationLevel;
 
+  /**
+   * 类加载的时候，就从driverManager中获取所有的驱动信息，放到当前维护的map中
+   */
   static {
     Enumeration<Driver> drivers = DriverManager.getDrivers();
     while (drivers.hasMoreElements()) {
@@ -104,6 +107,11 @@ public class UnpooledDataSource implements DataSource {
     this.driverProperties = driverProperties;
   }
 
+  /**
+   * 获取连接
+   * @return
+   * @throws SQLException
+   */
   @Override
   public Connection getConnection() throws SQLException {
     return doGetConnection(username, password);
@@ -214,14 +222,19 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private Connection doGetConnection(Properties properties) throws SQLException {
+    //初始化驱动
     initializeDriver();
+    //用DriverManager 获得连接
     Connection connection = DriverManager.getConnection(url, properties);
+    // 配置连接信息，自动提交以及事务隔离级别
     configureConnection(connection);
     return connection;
   }
 
   private synchronized void initializeDriver() throws SQLException {
+    //看看已注册的驱动列表里面，有没有
     if (!registeredDrivers.containsKey(driver)) {
+      //如果没有就加载驱动
       Class<?> driverType;
       try {
         if (driverClassLoader != null) {
@@ -231,6 +244,9 @@ public class UnpooledDataSource implements DataSource {
         }
         // DriverManager requires the driver to be loaded via the system ClassLoader.
         // http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
+        /**
+         * 文章放在unpooled包下面了
+         */
         Driver driverInstance = (Driver)driverType.newInstance();
         DriverManager.registerDriver(new DriverProxy(driverInstance));
         registeredDrivers.put(driver, driverInstance);
@@ -240,6 +256,11 @@ public class UnpooledDataSource implements DataSource {
     }
   }
 
+  /**
+   * 自动提交和一些事物的配置
+   * @param conn
+   * @throws SQLException
+   */
   private void configureConnection(Connection conn) throws SQLException {
     if (autoCommit != null && autoCommit != conn.getAutoCommit()) {
       conn.setAutoCommit(autoCommit);
