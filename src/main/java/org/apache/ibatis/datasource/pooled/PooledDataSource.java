@@ -529,9 +529,7 @@ public class PooledDataSource implements DataSource {
       if (poolPingEnabled) {
         if (poolPingConnectionsNotUsedFor >= 0 && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
           try {
-            if (log.isDebugEnabled()) {
-              log.debug("Testing connection " + conn.getRealHashCode() + " ...");
-            }
+            log.debug("Testing connection " + conn.getRealHashCode() + " ...");
             Connection realConn = conn.getRealConnection();
             try (Statement statement = realConn.createStatement()) {
               statement.executeQuery(poolPingQuery).close();
