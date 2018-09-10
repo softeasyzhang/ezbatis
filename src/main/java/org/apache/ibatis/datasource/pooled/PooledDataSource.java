@@ -336,9 +336,7 @@ public class PooledDataSource implements DataSource {
         }
       }
     }
-    if (log.isDebugEnabled()) {
-      log.debug("PooledDataSource forcefully closed/removed all connections.");
-    }
+    log.debug("PooledDataSource forcefully closed/removed all connections.");
   }
 
   public PoolState getPoolState() {

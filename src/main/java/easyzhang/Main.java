@@ -23,6 +23,7 @@ public class Main {
         try(InputStream inputStream = Resources.getResourceAsStream(resource)){
             //加载配置文件
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            System.out.println("初始化完毕,开始加载....");
             //DefaultSqlSession <-这个才是实现类
             SqlSession session = sqlSessionFactory.openSession();
             City city = session.selectOne("selectByPrimaryKey", 1);
