@@ -24,11 +24,24 @@ public class Main {
             //加载配置文件
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
             System.out.println("初始化完毕,开始加载....");
+
             //DefaultSqlSession <-这个才是实现类
             SqlSession session = sqlSessionFactory.openSession();
-            City city = session.selectOne("selectByPrimaryKey", 1);
-            System.out.println(city.getCityName());
+            CityExample cityExample = new CityExample();
+            CityExample.Criteria criteria = cityExample.createCriteria();
+            criteria.andCityIdEqualTo(1);
+            CityMapper cityMapper = session.getMapper(CityMapper.class);
+            City cityL = cityMapper.selectByPrimaryKey(1);
+            System.out.println(cityL.getCityName());
             session.close();
+
+            System.out.println("第一次查询结束");
+
+            SqlSession session1 = sqlSessionFactory.openSession();
+            City cityI = session1.selectOne("selectByPrimaryKey", 2);
+            System.out.println(cityI.getCityName());
+            session1.close();
+
         }catch (Exception e) {
              e.printStackTrace();
         }

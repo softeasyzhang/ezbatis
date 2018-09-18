@@ -26,9 +26,13 @@ import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionException;
 
 /**
+ * 直接使用jdbc的事务提交和回滚
  * {@link Transaction} that makes use of the JDBC commit and rollback facilities directly.
+ * 它依赖来自dataSource的连接去管理事务的范围
  * It relies on the connection retrieved from the dataSource to manage the scope of the transaction.
+ * getConnection被调用的时候，在检索连接
  * Delays connection retrieval until getConnection() is called.
+ * 启用自动提交的时候忽略
  * Ignores commit or rollback requests when autocommit is on.
  *
  * @author Clinton Begin
@@ -65,9 +69,7 @@ public class JdbcTransaction implements Transaction {
   @Override
   public void commit() throws SQLException {
     if (connection != null && !connection.getAutoCommit()) {
-      if (log.isDebugEnabled()) {
-        log.debug("Committing JDBC Connection [" + connection + "]");
-      }
+      log.debug("Committing JDBC Connection [" + connection + "]");
       connection.commit();
     }
   }
@@ -75,9 +77,7 @@ public class JdbcTransaction implements Transaction {
   @Override
   public void rollback() throws SQLException {
     if (connection != null && !connection.getAutoCommit()) {
-      if (log.isDebugEnabled()) {
-        log.debug("Rolling back JDBC Connection [" + connection + "]");
-      }
+      log.debug("Rolling back JDBC Connection [" + connection + "]");
       connection.rollback();
     }
   }
@@ -86,19 +86,19 @@ public class JdbcTransaction implements Transaction {
   public void close() throws SQLException {
     if (connection != null) {
       resetAutoCommit();
-      if (log.isDebugEnabled()) {
-        log.debug("Closing JDBC Connection [" + connection + "]");
-      }
+      log.debug("Closing JDBC Connection [" + connection + "]");
       connection.close();
     }
   }
 
+  /**
+   * 设置自动提交
+   * @param desiredAutoCommit
+   */
   protected void setDesiredAutoCommit(boolean desiredAutoCommit) {
     try {
       if (connection.getAutoCommit() != desiredAutoCommit) {
-        if (log.isDebugEnabled()) {
-          log.debug("Setting autocommit to " + desiredAutoCommit + " on JDBC Connection [" + connection + "]");
-        }
+        log.debug("Setting autocommit to " + desiredAutoCommit + " on JDBC Connection [" + connection + "]");
         connection.setAutoCommit(desiredAutoCommit);
       }
     } catch (SQLException e) {
@@ -118,9 +118,7 @@ public class JdbcTransaction implements Transaction {
         // and they mandate a commit/rollback before closing the connection.
         // A workaround is setting the autocommit to true before closing the connection.
         // Sybase throws an exception here.
-        if (log.isDebugEnabled()) {
-          log.debug("Resetting autocommit to true on JDBC Connection [" + connection + "]");
-        }
+        log.debug("Resetting autocommit to true on JDBC Connection [" + connection + "]");
         connection.setAutoCommit(true);
       }
     } catch (SQLException e) {
@@ -132,9 +130,7 @@ public class JdbcTransaction implements Transaction {
   }
 
   protected void openConnection() throws SQLException {
-    if (log.isDebugEnabled()) {
-      log.debug("Opening JDBC Connection");
-    }
+    log.debug("Opening JDBC Connection");
     connection = dataSource.getConnection();
     if (level != null) {
       connection.setTransactionIsolation(level.getLevel());

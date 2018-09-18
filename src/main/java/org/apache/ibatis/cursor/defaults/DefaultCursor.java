@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
+ * 默认的实现,这个实现线程不安全
  * This is the default implementation of a MyBatis Cursor.
  * This implementation is not thread safe.
  *
@@ -54,18 +55,22 @@ public class DefaultCursor<T> implements Cursor<T> {
 
         /**
          * A freshly created cursor, database ResultSet consuming has not started
+         * 一个新鲜的cursor,数据库结果集的消费还没开始呢
          */
         CREATED,
         /**
          * A cursor currently in use, database ResultSet consuming has started
+         * 目前被使用的cursor,数据库结果集的消费已经开始
          */
         OPEN,
         /**
          * A closed cursor, not fully consumed
+         * 未完全使用的cursor
          */
         CLOSED,
         /**
          * A fully consumed cursor, a consumed cursor is always closed
+         * 完全消耗的cursor，完全消耗的总是关闭的
          */
         CONSUMED
     }

@@ -21,6 +21,8 @@ import java.net.URL;
 /**
  * A class to wrap access to multiple class loaders making them work as one
  *
+ * 用来封装对多个类加载器的访问，对外提供统一的行为。
+ *
  * @author Clinton Begin
  */
 public class ClassLoaderWrapper {
@@ -30,9 +32,12 @@ public class ClassLoaderWrapper {
 
   ClassLoaderWrapper() {
     try {
+      //这里默认情况下你会得到的是AppClassLoader对象，也就是我们经常使用的系统类加载器（它负责加载应用classpath目录下的所有jar和class文件）
       systemClassLoader = ClassLoader.getSystemClassLoader();
     } catch (SecurityException ignored) {
-      // AccessControlException on Google App Engine   
+      // AccessControlException on Google App Engine
+      // 访问异常控制
+      // Google App Engine 是一种让您可以在 Google 的基础架构上运行您的网络应用程序。
     }
   }
   
@@ -201,13 +206,23 @@ public class ClassLoaderWrapper {
 
   }
 
+  /**
+   * 1.用户传过来的
+   * 2.缺省的，其实就是mybatis自己设置的，可能没有值，因为这个field本身没有初始化，唯一的write接口在Resources类中
+   * 3.当前线程的类加载器
+   * 4.加载ClassLoaderWrapper的类加载器
+   * 5.系统类加载器
+   * @param classLoader
+   * @return
+   */
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
     return new ClassLoader[]{
         classLoader,
         defaultClassLoader,
         Thread.currentThread().getContextClassLoader(),
         getClass().getClassLoader(),
-        systemClassLoader};
+        systemClassLoader
+    };
   }
 
 }
