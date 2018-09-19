@@ -15,5 +15,17 @@
  */
 /**
  * Contains the statement executors.
+ *
+ * 抽象类BaseExecutor采用模板方法设计模式，具体的实现在其子类：BatchExecutor、ReuseExecutor和SimpleExecutor.
+ *
+ *           --> BaseExecutor
+ *           \
+ *           \
+ * Executor --
+ *           \
+ *           \
+ *           --> CachingExecutor
+ *
+ * CachingExecutor在查找数据库前先查找缓存，若没有找到的话调用delegate从数据库查询，并将查询结果存入缓存中。
  */
 package org.apache.ibatis.executor;
