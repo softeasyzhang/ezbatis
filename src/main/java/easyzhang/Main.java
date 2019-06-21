@@ -32,17 +32,9 @@ public class Main {
             CityExample.Criteria criteria = cityExample.createCriteria();
             criteria.andCityIdEqualTo(1);
             CityMapper cityMapper = session.getMapper(CityMapper.class);
-            List<City> cityL = cityMapper.selectByExample(cityExample);
-         //   City cityL = cityMapper.selectByPrimaryKey(1);
-            System.out.println(cityL.get(0).getCityName());
+            List<City> cities = cityMapper.selectByExample(cityExample);
+            System.out.println(cities.get(0).getCityName());
             session.close();
-
-            System.out.println("第一次查询结束");
-/*
-            SqlSession session1 = sqlSessionFactory.openSession();
-            City cityI = session1.selectOne("selectByPrimaryKey", 2);
-            System.out.println(cityI.getCityName());
-            session1.close();*/
 
         }catch (Exception e) {
              e.printStackTrace();

@@ -27,14 +27,15 @@
 			<transactionManager type="JDBC" />
 			<dataSource type="POOLED">
 				<property name="driver" value="com.mysql.cj.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://localhost:3306/easyzhang?serverTimezone=GMT" />
+				<property name="url" value="jdbc:mysql://easyzhang.com:3306/easyzhang?serverTimezone=GMT" />
 				<property name="username" value="root" />
-				<property name="password" value="root" />
+				<property name="password" value="HENtai123!" />
 			</dataSource>
 		</environment>
 	</environments>
 
 	<mappers>
 		<mapper resource="easyzhang/CityMapper.xml" />
+		<mapper resource="easyzhang/StudentMapper.xml" />
 	</mappers>
 </configuration>

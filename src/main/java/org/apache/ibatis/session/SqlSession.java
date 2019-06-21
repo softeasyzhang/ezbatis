@@ -268,7 +268,6 @@ public interface SqlSession extends Closeable {
   Configuration getConfiguration();
 
   /**
-   * Retrieves a mapper.
    * @param <T> the mapper type
    * @param type Mapper interface class
    * @return a mapper bound to this SqlSession
